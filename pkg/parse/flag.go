@@ -2,11 +2,12 @@ package parse
 
 import (
 	"os"
+	"strings"
 )
 
 var isParse = false // parse status
 
-var flags = make(map[string]struct{}) // flag collection after parse
+var flags = make(map[rune]struct{}) // flag collection after parse
 
 var args = []string{} // args collection after parse
 
@@ -17,7 +18,9 @@ func parse() {
 
 	for _, param := range os.Args[1:] { // loop on os args
 		if param[0:2] == "--" || param[0:1] == "-" { // check if is flag
-			flags[param] = struct{}{} // save param
+			for _, f := range strings.Split(param, "") {
+				flags[rune(f[0])] = struct{}{} // save param
+			}
 		} else { // if is not a flag (arg)
 			args = append(args, param)
 		}
@@ -37,7 +40,7 @@ func GetArgs() []string {
 // Example:
 //
 //	hasAll := CheckFlag("-A", "--all")
-func CheckFlag(flag ...string) bool {
+func CheckFlag(flag ...rune) bool {
 	parse()
 	for _, f := range flag {
 		if _, ok := flags[f]; ok {

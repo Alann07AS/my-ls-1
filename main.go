@@ -7,19 +7,18 @@ import (
 
 func main() {
 	args := parse.GetArgs()
-	p := "./"
+	p := "."
 	if len(args) != 0 {
 		p = args[0]
 	}
 
-	withRecursive := parse.CheckFlag("-R")
+	withRecursive := parse.CheckFlag('R')
 	FS := files.ParseFS(p, withRecursive) // parse FS
-
 	files.FSDisplay(FS, files.FSDisplayOption{
-		WithDotfile:   parse.CheckFlag("-a"),
+		WithDotfile:   parse.CheckFlag('a'),
 		WithRecursive: withRecursive,
-		WidthDetails:  parse.CheckFlag("-l"),
-		ReverseResult: parse.CheckFlag("-r"),
-		SortByTime:    parse.CheckFlag("-t"),
+		WidthDetails:  parse.CheckFlag('l'),
+		ReverseResult: parse.CheckFlag('r'),
+		SortByTime:    parse.CheckFlag('t'),
 	})
 }
