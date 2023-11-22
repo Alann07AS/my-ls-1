@@ -12,16 +12,18 @@ import (
 )
 
 type FS struct {
-	Owner       string
-	Group       string
-	Size        int64
-	ModTime     time.Time
-	Name        string
-	Inode       uint64
-	Permissions string
-	IsDir       bool
-	FS          *FSarray
-	TotalBlocks int64
+	Owner        string
+	Group        string
+	Size         int64
+	ModTime      time.Time
+	Name         string
+	Inode        uint64
+	Permissions  string
+	IsDir        bool
+	IsExe        bool
+	FS           *FSarray
+	TotalBlocks  int64
+	SymbolicLink string //*FS
 }
 
 func ParseFS(path string, withRecursive bool) *FSarray {
@@ -142,6 +144,8 @@ func (a FStime) Less(i, j int) bool {
 }
 
 func NewFS(file fs.FileInfo, withRecursive bool, path *string) *FS {
+	sl, _ := os.Readlink(*path + "/" + file.Name())
+
 	return &FS{
 		getOwnerName(file),
 		getGroupName(file),
@@ -151,6 +155,7 @@ func NewFS(file fs.FileInfo, withRecursive bool, path *string) *FS {
 		file.Sys().(*syscall.Stat_t).Nlink,
 		file.Mode().String(),
 		file.IsDir(),
+		file.Mode().Perm()&0o100 != 0,
 		func() *FSarray {
 			if withRecursive && file.IsDir() {
 				return ParseFS(*path+"/"+file.Name(), true)
@@ -159,5 +164,6 @@ func NewFS(file fs.FileInfo, withRecursive bool, path *string) *FS {
 			}
 		}(),
 		file.Sys().(*syscall.Stat_t).Blocks,
+		sl,
 	}
 }

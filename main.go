@@ -11,7 +11,6 @@ func main() {
 	if len(args) != 0 {
 		p = args[0]
 	}
-
 	withRecursive := parse.CheckFlag('R')
 	FS := files.ParseFS(p, withRecursive) // parse FS
 	files.FSDisplay(FS, files.FSDisplayOption{
